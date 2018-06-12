@@ -13,7 +13,7 @@ parso==0.2.1
 pexpect==4.6.0
 pickleshare==0.7.4
 prompt-toolkit==1.0.15
-psycopg2==2.7.4
+psycopg2-binary==2.7.4
 ptyprocess==0.5.2
 Pygments==2.2.0
 pylint==1.9.2
