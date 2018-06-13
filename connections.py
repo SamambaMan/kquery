@@ -11,7 +11,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_connections(object):
     def setupUi(self, connections):
         connections.setObjectName("connections")
-        connections.resize(619, 424)
+        connections.resize(368, 304)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(connections.sizePolicy().hasHeightForWidth())
+        connections.setSizePolicy(sizePolicy)
         connections.setModal(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(connections)
         self.verticalLayout.setObjectName("verticalLayout")

@@ -1,6 +1,9 @@
 import sys
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PyQt5.QtGui import (
+    QStandardItem,
+    QStandardItemModel
+)
 from PyQt5.QtCore import QSettings
 import mainwindow
 import connections
@@ -24,7 +27,7 @@ def splitquerybyposition(query, position):
 
 
 class BaseWindow:
-    def error_message(self, message, details):
+    def error_message(self, message, details=None):
         msg = QtWidgets.QMessageBox(parent=self)
         msg.setIcon(QtWidgets.QMessageBox.Critical)
         msg.setText(message)
@@ -57,8 +60,34 @@ class Connection(QtWidgets.QDialog, BaseWindow):
         self.ui = connection.Ui_connection()
         self.ui.setupUi(self)
         self.ui.buttonBox.accepted.connect(self.accepted)
+
+    def validate(self):
+        field = None
+        if not self.ui.name.text():
+            field = self.ui.name
+        elif not self.ui.host.text():
+            field = self.ui.host
+        elif not self.ui.database.text():
+            field = self.ui.database
+        elif not self.ui.username.text():
+            field = self.ui.username
+        elif not self.ui.password.text():
+            field = self.ui.password
+        
+        if field:
+            self.error_message(
+                'Ô chapa...'
+                '\nTodos os campos são obrigatórios!'
+                '\nTá de sacanagem?'
+                '\nInforme %s!' % field.placeholderText())
+            field.setFocus()
+            return False
+        return True
     
     def accepted(self):
+        if not self.validate():
+            return
+
         ui = self.ui
         parameters = {
             'name': ui.name.text(),
@@ -152,7 +181,7 @@ class Connections(QtWidgets.QDialog, BaseWindow):
             self.close()
             self.parent().listtables()
         except Exception as error:
-            self.errorMessage('Deu ruim na conexão', str(error))
+            self.error_message('Deu ruim na conexão', str(error))
 
 
 class MainWindow(QtWidgets.QMainWindow, BaseWindow):
