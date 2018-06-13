@@ -11,8 +11,8 @@ from forms import connection
 import psycopg2
 
 settings = None
-
 connection_state = None
+
 _LIST_TABLES = ("select relname "
                 "from pg_class "
                 "where relkind='r' and "
@@ -20,6 +20,7 @@ _LIST_TABLES = ("select relname "
                 "order by relname asc")
 
 _CONNECTIONS = 'connections'
+_LOFILE = 'lastopen'
 
 
 def splitquerybyposition(query, position):
@@ -61,7 +62,6 @@ class Connection(QtWidgets.QDialog, BaseWindow):
         self.ui = connection.Ui_connection()
         self.ui.setupUi(self)
         self.ui.buttonBox.accepted.connect(self.accepted)
-        self.opened_file = None
 
     def validate(self):
         field = None
@@ -194,7 +194,76 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
         self.ui.setupUi(self)
         self.ui.executequery.clicked.connect(self.execute_query)
         self.ui.actionConex_es.triggered.connect(self.show_connections)
+        self.ui.actionAbrir.triggered.connect(self.open)
+        self.ui.actionSalvar.triggered.connect(self.save)
+        self.ui.actionSalvar_como.triggered.connect(self.saveas)
+        self.opened_file = None
         settings = _settings
+        self.preload_last_opened()
+    
+    def preload_last_opened(self):
+        if settings.value(_LOFILE):
+            try:
+                self.opened_file = settings.value(_LOFILE)
+                self._readfile()
+                self.update_window_title()
+            except:
+                self.opened_file = None
+
+    def _update_last_opened_setting(self):
+        settings.setValue(_LOFILE, self.opened_file)
+    
+    def update_window_title(self):
+        self.setWindowTitle("kquery - %s" % self.opened_file)
+
+    def open(self):
+        filename, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Abrir um super arquivo SQL!",
+            filter="*.sql")
+
+        if filename:
+            self.opened_file = filename
+            self._readfile()
+            self.update_window_title()
+            self._update_last_opened_setting()
+    
+    def _readfile(self):
+        with open(self.opened_file, 'r') as file:
+            self.ui.queryeditor.setPlainText(
+                file.read()
+            )
+
+    def _writefile(self):
+        with open(self.opened_file, 'w+') as file:
+            file.write(
+                self.ui.queryeditor.toPlainText()
+            )
+
+    def save(self):
+        if not self.opened_file:
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                self,
+                "Salvar o seu arquivinho bonitinho, fofo!",
+                filter="*.sql")
+            self.opened_file = filename
+        
+        if self.opened_file:
+            self._writefile()
+            self.update_window_title()
+            self._update_last_opened_setting()
+
+    def saveas(self):
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self,
+            "Vamos então salvar um novo, né?",
+            filter="*.sql")
+        
+        if filename:
+            self.opened_file = filename
+            self._writefile()
+            self.update_window_title()
+            self._update_last_opened_setting()
 
     def listtables(self):
         cursor = connection_state.cursor()
