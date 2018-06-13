@@ -18,19 +18,32 @@ _LIST_TABLES = ("select relname "
 _CONNECTIONS = "connections"
 
 
-def listtables():
-    cursor = connection.cursor()
-    cursor.execute(_LIST_TABLES)
-    tables = cursor.fetchall()
-    return [item[0] for item in tables]
-
-
 def splitquerybyposition(query, position):
     querysliced = [query[:position], query[position:]]
     return querysliced[0].split(";")[-1] + querysliced[1].split(';')[0]
 
 
-class Connection(QtWidgets.QDialog):
+class BaseWindow:
+    def errorMessage(self, message, details):
+        msg = QtWidgets.QMessageBox(parent=self)
+        msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText(message)
+        msg.setInformativeText(details)
+        msg.setWindowTitle("Presta atenção, brother...")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.show()
+    
+    def alertMessage(self, message, details=None):
+        msg = QtWidgets.QMessageBox(parent=self)
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+        msg.setText(message)
+        msg.setInformativeText(details)
+        msg.setWindowTitle("Deu ruim, fiel")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.show()
+
+
+class Connection(QtWidgets.QDialog, BaseWindow):
     def __init__(self, parent):
         super(Connection, self).__init__(parent=parent)
         self.ui = connection.Ui_connection()
@@ -58,13 +71,14 @@ class Connection(QtWidgets.QDialog):
         self.parent().read_connection_settings()
 
 
-class Connections(QtWidgets.QDialog):
+class Connections(QtWidgets.QDialog, BaseWindow):
     def __init__(self, parent):
         super(Connections, self).__init__(parent=parent)
         self.ui = connections.Ui_connections()
         self.ui.setupUi(self)
         self.read_connection_settings()
         self.ui.add.clicked.connect(self.new_connection)
+        self.ui.connect.clicked.connect(self.connect)
     
     def new_connection(self):
         new_connection = Connection(self)
@@ -76,13 +90,37 @@ class Connections(QtWidgets.QDialog):
         if stored_connections:
             model = QStandardItemModel()
             for nconnection, connection in enumerate(stored_connections):
-                import ipdb; ipdb.set_trace()
                 model.setItem(nconnection, 0, QStandardItem(connection['name']))
-                model.setItem(nconnection, 1, QStandardItem(connection['username']))
-                model.setItem(nconnection, 2, QStandardItem(connection['host']))
             self.ui.connectionslist.setModel(model)
+    
+    def connect(self):
+        indexes = self.ui.connectionslist.selectedIndexes()
+        if not indexes:
+            self.alertMessage("Não consigo adivinhar que conexão você quer usar, informe uma, ô pá!")
+            return
 
-class MainWindow(QtWidgets.QMainWindow):
+        connection_name = indexes[0].data()
+
+        global connection_state
+        connection_parameters = next(filter(
+            lambda conn: connection_name == conn['name'],
+            settings.value(_CONNECTIONS)
+        ))
+        try:
+            connection_state = psycopg2.connect(
+                database=connection_parameters["database"],
+                user=connection_parameters["username"],
+                password=connection_parameters["password"],
+                host=connection_parameters["host"],
+                port=connection_parameters["port"]
+            )
+            self.close()
+            self.parent().listtables()
+        except Exception as error:
+            self.errorMessage("Deu ruim na conexão", str(error))
+
+
+class MainWindow(QtWidgets.QMainWindow, BaseWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.ui = mainwindow.Ui_MainWindow()
@@ -90,18 +128,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.executequery.clicked.connect(self.execute_query)
         self.ui.actionConex_es.triggered.connect(self.show_connections)
 
-        # model = QStandardItemModel()
-        # for ntable, table in enumerate(listtables()):
-        #     model.setItem(ntable, 0, QStandardItem(str(table)))
+    def listtables(self):
+        cursor = connection_state.cursor()
+        cursor.execute(_LIST_TABLES)
+        tables = cursor.fetchall()
+        tables = [item[0] for item in tables]
+        model = QStandardItemModel()
+        for ntable, table in enumerate(tables):
+            model.setItem(ntable, 0, QStandardItem(str(table)))
         
-        # self.ui.tables.setModel(model)
+        self.ui.tables.setModel(model)
 
     def show_connections(self):
         connections_window = Connections(self)
         connections_window.show()
 
     def execute_query(self):
-        with connection.cursor() as cursor:
+        with connection_state.cursor() as cursor:
             querys = self.ui.queryeditor.toPlainText()
             position = self.ui.queryeditor.textCursor().position()
             query = splitquerybyposition(querys, position)
@@ -124,7 +167,6 @@ app.setOrganizationName("kquery")
 app.setOrganizationDomain("github.com/samambaman")
 
 settings = QSettings(app)
-settings.setValue(_CONNECTIONS, [])
 
 my_mainWindow = MainWindow()
 my_mainWindow.show()

@@ -28,6 +28,8 @@ class Ui_connection(object):
         self.username.setObjectName("username")
         self.verticalLayout.addWidget(self.username)
         self.password = QtWidgets.QLineEdit(connection)
+        self.password.setInputMask("")
+        self.password.setEchoMode(QtWidgets.QLineEdit.Password)
         self.password.setObjectName("password")
         self.verticalLayout.addWidget(self.password)
         self.port = QtWidgets.QSpinBox(connection)

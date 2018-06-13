@@ -47,6 +47,12 @@
    </item>
    <item>
     <widget class="QLineEdit" name="password">
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
      <property name="placeholderText">
       <string>Senha</string>
      </property>
