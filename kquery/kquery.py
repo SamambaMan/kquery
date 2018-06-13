@@ -200,6 +200,7 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
         self.opened_file = None
         settings = _settings
         self.preload_last_opened()
+        self.show_connections()
     
     def preload_last_opened(self):
         if settings.value(_LOFILE):
@@ -285,7 +286,6 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
             querys = self.ui.queryeditor.toPlainText()
             position = self.ui.queryeditor.textCursor().position()
             query = splitquerybyposition(querys, position)
-            query = query + ' limit 10'
             cursor.execute(query)
             headers = [item.name for item in cursor.description]
             result = cursor.fetchall()

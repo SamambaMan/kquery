@@ -77,10 +77,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "kquery"))
         self.executequery.setText(_translate("MainWindow", "Executar"))
+        self.executequery.setShortcut(_translate("MainWindow", "Ctrl+Return"))
         self.menuFile.setTitle(_translate("MainWindow", "Ar&quivo"))
         self.actionQuit.setText(_translate("MainWindow", "&Sair"))
         self.actionConex_es.setText(_translate("MainWindow", "&Conexões"))
         self.actionAbrir.setText(_translate("MainWindow", "&Abrir"))
         self.actionSalvar.setText(_translate("MainWindow", "Sa&lvar"))
-        self.actionSalvar_como.setText(_translate("MainWindow", "Salvar &como..."))
+        self.actionSalvar_como.setText(_translate("MainWindow", "Sal&var como..."))
 

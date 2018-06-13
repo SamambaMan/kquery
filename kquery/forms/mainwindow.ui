@@ -37,6 +37,9 @@
           <property name="text">
            <string>Executar</string>
           </property>
+          <property name="shortcut">
+           <string>Ctrl+Return</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -106,7 +109,7 @@
   </action>
   <action name="actionSalvar_como">
    <property name="text">
-    <string>Salvar &amp;como...</string>
+    <string>Sal&amp;var como...</string>
    </property>
   </action>
  </widget>
