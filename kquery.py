@@ -15,32 +15,40 @@ _LIST_TABLES = ("select relname "
                 "relname !~ '^(pg_|sql_)' "
                 "order by relname asc")
 
-_CONNECTIONS = "connections"
+_CONNECTIONS = 'connections'
 
 
 def splitquerybyposition(query, position):
     querysliced = [query[:position], query[position:]]
-    return querysliced[0].split(";")[-1] + querysliced[1].split(';')[0]
+    return querysliced[0].split(';')[-1] + querysliced[1].split(';')[0]
 
 
 class BaseWindow:
-    def errorMessage(self, message, details):
+    def error_message(self, message, details):
         msg = QtWidgets.QMessageBox(parent=self)
         msg.setIcon(QtWidgets.QMessageBox.Critical)
         msg.setText(message)
         msg.setInformativeText(details)
-        msg.setWindowTitle("Presta atenção, brother...")
+        msg.setWindowTitle('Presta atenção, brother...')
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.show()
     
-    def alertMessage(self, message, details=None):
+    def alert_message(self, message, details=None):
         msg = QtWidgets.QMessageBox(parent=self)
         msg.setIcon(QtWidgets.QMessageBox.Warning)
         msg.setText(message)
         msg.setInformativeText(details)
-        msg.setWindowTitle("Deu ruim, fiel")
+        msg.setWindowTitle('Deu ruim, fiel')
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.show()
+
+    def ask_message(self, question):
+        return QtWidgets.QMessageBox.question(
+            self,
+            'Escolha sabiamente...',
+            question,
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+        )
 
 
 class Connection(QtWidgets.QDialog, BaseWindow):
@@ -53,12 +61,12 @@ class Connection(QtWidgets.QDialog, BaseWindow):
     def accepted(self):
         ui = self.ui
         parameters = {
-            "name": ui.name.text(),
-            "host": ui.host.text(),
-            "database": ui.database.text(),
-            "username": ui.username.text(),
-            "password": ui.password.text(),
-            "port": ui.port.value()
+            'name': ui.name.text(),
+            'host': ui.host.text(),
+            'database': ui.database.text(),
+            'username': ui.username.text(),
+            'password': ui.password.text(),
+            'port': ui.port.value()
         }
 
         connections = settings.value(_CONNECTIONS)
@@ -79,6 +87,7 @@ class Connections(QtWidgets.QDialog, BaseWindow):
         self.read_connection_settings()
         self.ui.add.clicked.connect(self.new_connection)
         self.ui.connect.clicked.connect(self.connect)
+        self.ui.pushButton.clicked.connect(self.delete)
     
     def new_connection(self):
         new_connection = Connection(self)
@@ -87,37 +96,63 @@ class Connections(QtWidgets.QDialog, BaseWindow):
     def read_connection_settings(self):
         settings = QSettings(parent=self)
         stored_connections = settings.value(_CONNECTIONS)
+        model = QStandardItemModel()
         if stored_connections:
-            model = QStandardItemModel()
             for nconnection, connection in enumerate(stored_connections):
                 model.setItem(nconnection, 0, QStandardItem(connection['name']))
-            self.ui.connectionslist.setModel(model)
+        self.ui.connectionslist.setModel(model)
     
-    def connect(self):
+    def _selected_connection_name(self, message):
         indexes = self.ui.connectionslist.selectedIndexes()
         if not indexes:
-            self.alertMessage("Não consigo adivinhar que conexão você quer usar, informe uma, ô pá!")
+            self.alert_message(message)
             return
+        return indexes[0].data()
 
-        connection_name = indexes[0].data()
-
-        global connection_state
-        connection_parameters = next(filter(
+    def _connection_parameters(self, connection_name):
+        return next(filter(
             lambda conn: connection_name == conn['name'],
             settings.value(_CONNECTIONS)
         ))
+
+    def delete(self):
+        connection_name = self._selected_connection_name(
+            'Migue, não posso apagar se você não me disser qual, né?')
+        if not connection_name:
+            return
+
+        resp = self.ask_message(
+            'Está certo disso?\nValendo Hum Milhão de Reais?'
+            '\nPosso apagar a conexão %s?' % connection_name)
+        if resp == QtWidgets.QMessageBox.Yes:
+            connection_parameters = self._connection_parameters(
+                connection_name
+            )
+            all_parameters = settings.value(_CONNECTIONS)
+            all_parameters.remove(connection_parameters)
+            settings.setValue(_CONNECTIONS, all_parameters)
+            self.read_connection_settings()
+    
+    def connect(self):
+        connection_name = self._selected_connection_name(
+            'Não consigo adivinhar que conexão você quer usar, informe uma, ô pá!')
+        if not connection_name:
+            return
+
+        global connection_state
+        connection_parameters = self._connection_parameters(connection_name)
         try:
             connection_state = psycopg2.connect(
-                database=connection_parameters["database"],
-                user=connection_parameters["username"],
-                password=connection_parameters["password"],
-                host=connection_parameters["host"],
-                port=connection_parameters["port"]
+                database=connection_parameters['database'],
+                user=connection_parameters['username'],
+                password=connection_parameters['password'],
+                host=connection_parameters['host'],
+                port=connection_parameters['port']
             )
             self.close()
             self.parent().listtables()
         except Exception as error:
-            self.errorMessage("Deu ruim na conexão", str(error))
+            self.errorMessage('Deu ruim na conexão', str(error))
 
 
 class MainWindow(QtWidgets.QMainWindow, BaseWindow):
@@ -148,7 +183,7 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
             querys = self.ui.queryeditor.toPlainText()
             position = self.ui.queryeditor.textCursor().position()
             query = splitquerybyposition(querys, position)
-            query = query + " limit 10"
+            query = query + ' limit 10'
             cursor.execute(query)
             headers = [item.name for item in cursor.description]
             result = cursor.fetchall()
@@ -163,8 +198,8 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
 
 
 app = QtWidgets.QApplication(sys.argv)
-app.setOrganizationName("kquery")
-app.setOrganizationDomain("github.com/samambaman")
+app.setOrganizationName('kquery')
+app.setOrganizationDomain('github.com/samambaman')
 
 settings = QSettings(app)
 
