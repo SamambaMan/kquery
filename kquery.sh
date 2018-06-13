@@ -1,2 +1,2 @@
 sh build.sh
-python3 kquery.py
+python3 kquery

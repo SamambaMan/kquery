@@ -5,9 +5,9 @@ from PyQt5.QtGui import (
     QStandardItemModel
 )
 from PyQt5.QtCore import QSettings
-import mainwindow
-import connections
-import connection
+from forms import mainwindow
+from forms import connections
+from forms import connection
 import psycopg2
 
 
@@ -224,15 +224,3 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
                     model.setItem(nline, ncolumn,QStandardItem(str(column)))
   
             self.ui.tableresults.setModel(model)
-
-
-app = QtWidgets.QApplication(sys.argv)
-app.setOrganizationName('kquery')
-app.setOrganizationDomain('github.com/samambaman')
-
-settings = QSettings(app)
-
-my_mainWindow = MainWindow()
-my_mainWindow.show()
-
-sys.exit(app.exec_())
