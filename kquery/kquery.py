@@ -10,6 +10,7 @@ from forms import connections
 from forms import connection
 import psycopg2
 
+settings = None
 
 connection_state = None
 _LIST_TABLES = ("select relname "
@@ -185,12 +186,14 @@ class Connections(QtWidgets.QDialog, BaseWindow):
 
 
 class MainWindow(QtWidgets.QMainWindow, BaseWindow):
-    def __init__(self):
+    def __init__(self, _settings):
+        global settings
         super(MainWindow, self).__init__()
         self.ui = mainwindow.Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.executequery.clicked.connect(self.execute_query)
         self.ui.actionConex_es.triggered.connect(self.show_connections)
+        settings = _settings
 
     def listtables(self):
         cursor = connection_state.cursor()

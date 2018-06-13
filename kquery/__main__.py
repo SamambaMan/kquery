@@ -9,7 +9,7 @@ app.setOrganizationDomain('github.com/samambaman')
 
 settings = QSettings(app)
 
-my_mainWindow = MainWindow()
+my_mainWindow = MainWindow(settings)
 my_mainWindow.show()
 
 sys.exit(app.exec_())
