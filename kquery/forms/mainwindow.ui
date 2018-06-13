@@ -73,9 +73,12 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Fi&amp;le</string>
+     <string>Ar&amp;quivo</string>
     </property>
     <addaction name="actionConex_es"/>
+    <addaction name="actionAbrir"/>
+    <addaction name="actionSalvar"/>
+    <addaction name="actionSalvar_como"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -83,12 +86,27 @@
   </widget>
   <action name="actionQuit">
    <property name="text">
-    <string>&amp;Quit</string>
+    <string>&amp;Sair</string>
    </property>
   </action>
   <action name="actionConex_es">
    <property name="text">
     <string>&amp;Conexões</string>
+   </property>
+  </action>
+  <action name="actionAbrir">
+   <property name="text">
+    <string>&amp;Abrir</string>
+   </property>
+  </action>
+  <action name="actionSalvar">
+   <property name="text">
+    <string>Sa&amp;lvar</string>
+   </property>
+  </action>
+  <action name="actionSalvar_como">
+   <property name="text">
+    <string>Salvar &amp;como...</string>
    </property>
   </action>
  </widget>

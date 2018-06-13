@@ -57,10 +57,11 @@ class BaseWindow:
 
 class Connection(QtWidgets.QDialog, BaseWindow):
     def __init__(self, parent):
-        super(Connection, self).__init__(parent=parent)
+        super().__init__(parent=parent)
         self.ui = connection.Ui_connection()
         self.ui.setupUi(self)
         self.ui.buttonBox.accepted.connect(self.accepted)
+        self.opened_file = None
 
     def validate(self):
         field = None
@@ -111,7 +112,7 @@ class Connection(QtWidgets.QDialog, BaseWindow):
 
 class Connections(QtWidgets.QDialog, BaseWindow):
     def __init__(self, parent):
-        super(Connections, self).__init__(parent=parent)
+        super().__init__(parent=parent)
         self.ui = connections.Ui_connections()
         self.ui.setupUi(self)
         self.read_connection_settings()
@@ -188,7 +189,7 @@ class Connections(QtWidgets.QDialog, BaseWindow):
 class MainWindow(QtWidgets.QMainWindow, BaseWindow):
     def __init__(self, _settings):
         global settings
-        super(MainWindow, self).__init__()
+        super().__init__()
         self.ui = mainwindow.Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.executequery.clicked.connect(self.execute_query)
