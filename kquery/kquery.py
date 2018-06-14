@@ -4,16 +4,21 @@ from PyQt5.QtGui import (
     QStandardItem,
     QStandardItemModel
 )
-from PyQt5.QtCore import QSettings
-from forms import mainwindow
-from forms import connections
-from forms import connection
+from PyQt5.QtCore import (
+    QSettings,
+    QThread,
+    pyqtSignal)
+from forms import (
+    mainwindow,
+    connections,
+    connection
+)
 import psycopg2
 
 settings = None
 connection_state = None
 
-_LIST_TABLES = ("select relname "
+_LIST_TABLES = ("select relname as Tabelas "
                 "from pg_class "
                 "where relkind='r' and "
                 "relname !~ '^(pg_|sql_)' "
@@ -267,15 +272,10 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
             self._update_last_opened_setting()
 
     def listtables(self):
-        cursor = connection_state.cursor()
-        cursor.execute(_LIST_TABLES)
-        tables = cursor.fetchall()
-        tables = [item[0] for item in tables]
-        model = QStandardItemModel()
-        for ntable, table in enumerate(tables):
-            model.setItem(ntable, 0, QStandardItem(str(table)))
-        
-        self.ui.tables.setModel(model)
+        with connection_state.cursor() as cursor:
+            executor = QueryThread(_LIST_TABLES, cursor)
+            executor.query_data.connect(self._set_tables_model)
+            executor.run()
 
     def show_connections(self):
         connections_window = Connections(self)
@@ -286,14 +286,44 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
             querys = self.ui.queryeditor.toPlainText()
             position = self.ui.queryeditor.textCursor().position()
             query = splitquerybyposition(querys, position)
-            cursor.execute(query)
-            headers = [item.name for item in cursor.description]
-            result = cursor.fetchall()
+            executor = QueryThread(query, cursor)
+            executor.query_data.connect(self._set_tableresults_model)
+            executor.run()
+
+    def _set_tableresults_model(self, model):
+        self.ui.tableresults.setModel(model)
+    
+    def _set_tables_model(self, model):
+        self.ui.tables.setModel(model)
+
+
+class QueryThread(QThread):
+    # Query Thread Execution
+    # QT developers discourage QThread subclassing, planing to read
+    # and think on that later
+    query_data = pyqtSignal(object)
+
+    def __init__(self, query, cursor):
+        super().__init__()
+        self.cursor = cursor
+        self.query = query
+
+    def run(self):
+        try:
+            self.cursor.execute(self.query)
+            headers = [item.name for item in self.cursor.description]
+            result = self.cursor.fetchall()
             model = QStandardItemModel()
             model.setHorizontalHeaderLabels(headers)
             model.setRowCount(len(result))
             for nline, line in enumerate(result):
                 for ncolumn, column in enumerate(line):
                     model.setItem(nline, ncolumn,QStandardItem(str(column)))
-  
-            self.ui.tableresults.setModel(model)
+        except Exception as error:
+            connection_state.rollback()
+            model = QStandardItemModel()
+            model.setHorizontalHeaderLabels(["Deu ruim!"])
+            model.setRowCount(1)
+            model.setItem(0, 0, QStandardItem(str(error)))
+
+        self.query_data.emit(model)
