@@ -1,4 +1,3 @@
-import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import (
     QStandardItem,
@@ -42,7 +41,7 @@ class BaseWindow:
         msg.setWindowTitle('Presta atenção, brother...')
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.show()
-    
+
     def alert_message(self, message, details=None):
         msg = QtWidgets.QMessageBox(parent=self)
         msg.setIcon(QtWidgets.QMessageBox.Warning)
@@ -80,7 +79,7 @@ class Connection(QtWidgets.QDialog, BaseWindow):
             field = self.ui.username
         elif not self.ui.password.text():
             field = self.ui.password
-        
+
         if field:
             self.error_message(
                 'Ô chapa...'
@@ -90,7 +89,7 @@ class Connection(QtWidgets.QDialog, BaseWindow):
             field.setFocus()
             return False
         return True
-    
+
     def accepted(self):
         if not self.validate():
             return
@@ -124,20 +123,24 @@ class Connections(QtWidgets.QDialog, BaseWindow):
         self.ui.add.clicked.connect(self.new_connection)
         self.ui.connect.clicked.connect(self.connect)
         self.ui.pushButton.clicked.connect(self.delete)
-    
+
     def new_connection(self):
         new_connection = Connection(self)
         new_connection.show()
-    
+
     def read_connection_settings(self):
         settings = QSettings(parent=self)
         stored_connections = settings.value(_CONNECTIONS)
         model = QStandardItemModel()
         if stored_connections:
-            for nconnection, connection in enumerate(stored_connections):
-                model.setItem(nconnection, 0, QStandardItem(connection['name']))
+            for nconnection, thisconnection in enumerate(stored_connections):
+                model.setItem(
+                    nconnection,
+                    0,
+                    QStandardItem(thisconnection['name'])
+                )
         self.ui.connectionslist.setModel(model)
-    
+
     def _selected_connection_name(self, message):
         indexes = self.ui.connectionslist.selectedIndexes()
         if not indexes:
@@ -168,10 +171,11 @@ class Connections(QtWidgets.QDialog, BaseWindow):
             all_parameters.remove(connection_parameters)
             settings.setValue(_CONNECTIONS, all_parameters)
             self.read_connection_settings()
-    
+
     def connect(self):
         connection_name = self._selected_connection_name(
-            'Não consigo adivinhar que conexão você quer usar, informe uma, ô pá!')
+            'Não consigo adivinhar que conexão você quer usar,'
+            ' informe uma, ô pá!')
         if not connection_name:
             return
 
@@ -206,19 +210,19 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
         settings = _settings
         self.preload_last_opened()
         self.show_connections()
-    
+
     def preload_last_opened(self):
         if settings.value(_LOFILE):
             try:
                 self.opened_file = settings.value(_LOFILE)
                 self._readfile()
                 self.update_window_title()
-            except:
+            except Exception:
                 self.opened_file = None
 
     def _update_last_opened_setting(self):
         settings.setValue(_LOFILE, self.opened_file)
-    
+
     def update_window_title(self):
         self.setWindowTitle("kquery - %s" % self.opened_file)
 
@@ -233,7 +237,7 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
             self._readfile()
             self.update_window_title()
             self._update_last_opened_setting()
-    
+
     def _readfile(self):
         with open(self.opened_file, 'r') as file:
             self.ui.queryeditor.setPlainText(
@@ -253,7 +257,7 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
                 "Salvar o seu arquivinho bonitinho, fofo!",
                 filter="*.sql")
             self.opened_file = filename
-        
+
         if self.opened_file:
             self._writefile()
             self.update_window_title()
@@ -264,7 +268,7 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
             self,
             "Vamos então salvar um novo, né?",
             filter="*.sql")
-        
+
         if filename:
             self.opened_file = filename
             self._writefile()
@@ -292,7 +296,7 @@ class MainWindow(QtWidgets.QMainWindow, BaseWindow):
 
     def _set_tableresults_model(self, model):
         self.ui.tableresults.setModel(model)
-    
+
     def _set_tables_model(self, model):
         self.ui.tables.setModel(model)
 
@@ -318,7 +322,11 @@ class QueryThread(QThread):
             model.setRowCount(len(result))
             for nline, line in enumerate(result):
                 for ncolumn, column in enumerate(line):
-                    model.setItem(nline, ncolumn,QStandardItem(str(column)))
+                    model.setItem(
+                        nline,
+                        ncolumn,
+                        QStandardItem(str(column))
+                    )
         except Exception as error:
             connection_state.rollback()
             model = QStandardItemModel()

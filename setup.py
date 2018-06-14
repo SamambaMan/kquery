@@ -1,11 +1,13 @@
 import setuptools
 
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+
 setuptools.setup(
     name="kquery",
-    version="0.0.2",
+    version="0.0.4",
     author="Felipe Ferreira",
     author_email="felipe.gomes.ferreira@gmail.com",
     description="Damn small QT based database client",
@@ -27,7 +29,7 @@ setuptools.setup(
         "psycopg2-binary",
         "PyQt5"
     ],
-    entry_points = {
+    entry_points={
           "console_scripts": [
               "kquery = kquery.cli:cli",
           ],
