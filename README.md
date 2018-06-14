@@ -9,7 +9,23 @@ If you need complex database management features, have a decent modern workstati
 
 Bonus feature: funny dialogs for user interaction.
 
-## FAQ
+## Install steps:
+
+This step is rather complicated, but I'm counting on you!
+
+`
+   $ pip install kquery
+`
+
+And then, to run:
+
+`
+   $ kquery
+`
+
+And that's it! 
+
+## FAQ:
 Q - Why did you choose PyQt5, a 100+MB framework for a "light" database client? You must be stupid to load that much dependency for such a small application.
 
 A - Because this amount of space isn't a problem for me. Hard Disk space is plentiful and cheap nowadays, not as much as battery/memmory/processing in low-powered devices.

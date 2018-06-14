@@ -8,7 +8,7 @@ from PyQt5.QtCore import (
     QSettings,
     QThread,
     pyqtSignal)
-from forms import (
+from .forms import (
     mainwindow,
     connections,
     connection
