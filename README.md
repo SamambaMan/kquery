@@ -16,4 +16,4 @@ A - Because this amount of space isn't a problem for me. Hard Disk space is plen
 
 Q - Do you plan to provide other database connectors? Or improved postgresql connecion features?
 
-A - Yes! If I have enougth time and application load time and performance is not compromised, why not?  
+A - Yes! If I have enougth time and application load time and performance is not compromised, why not?
