@@ -1,6 +1,8 @@
 # kquery
 Damn light QT-based database client
 
+[![Build Status](https://travis-ci.org/SamambaMan/kquery.svg?branch=master)](https://travis-ci.org/SamambaMan/kquery)
+
 This postgresql client is intended to satisfy KDE Plasma users who has really low-spec hardware (Yepo laptops, Raspberry PI, etc), those who already runs Plasma or QT desktop and don't want fancy resources, wich full database IDEs available like DBeaver already provides.
 
 The goal is to keep a light, quick-starting, tiny usable interface with basic database features for software developers.
