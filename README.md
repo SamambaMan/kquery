@@ -3,7 +3,7 @@ Damn light QT-based database client
 
 [![Build Status](https://travis-ci.org/SamambaMan/kquery.svg?branch=master)](https://travis-ci.org/SamambaMan/kquery)
 
-This postgresql client is intended to satisfy KDE Plasma users who has really low-spec hardware (Yepo laptops, Raspberry PI, etc), those who already runs Plasma or QT desktop and don't want fancy resources, wich full database IDEs available like DBeaver already provides.
+This PostgreSQL client is intended to satisfy KDE Plasma users who have low-spec hardware (Yepo laptops, Raspberry Pi etc.), those who already run Plasma or QT desktop and doesn't want fancy resources, which full database IDEs available like DBeaver already provides.
 
 The goal is to keep a light, quick-starting, tiny usable interface with basic database features for software developers.
 
@@ -32,6 +32,6 @@ Q - Why did you choose PyQt5, a 100+MB framework for a "light" database client? 
 
 A - Because this amount of space isn't a problem for me. Hard Disk space is plentiful and cheap nowadays, not as much as battery/memmory/processing in low-powered devices.
 
-Q - Do you plan to provide other database connectors? Or improved postgresql connecion features?
+Q - Do you plan to provide other database connectors? Or improved PostgreSQL connecion features?
 
 A - Yes! If I have enough time and application load time and performance is not compromised, why not?
