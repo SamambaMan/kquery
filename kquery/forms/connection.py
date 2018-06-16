@@ -11,10 +11,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_connection(object):
     def setupUi(self, connection):
         connection.setObjectName("connection")
-        connection.resize(193, 236)
+        connection.resize(193, 312)
         connection.setModal(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(connection)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.connectiontype = QtWidgets.QComboBox(connection)
+        self.connectiontype.setObjectName("connectiontype")
+        self.verticalLayout.addWidget(self.connectiontype)
         self.name = QtWidgets.QLineEdit(connection)
         self.name.setObjectName("name")
         self.verticalLayout.addWidget(self.name)
@@ -51,7 +54,7 @@ class Ui_connection(object):
         _translate = QtCore.QCoreApplication.translate
         connection.setWindowTitle(_translate("connection", "Conexão"))
         self.name.setPlaceholderText(_translate("connection", "Nome da Conexão"))
-        self.host.setPlaceholderText(_translate("connection", "Host"))
+        self.host.setPlaceholderText(_translate("connection", "Host/Arquivo(SQLite)"))
         self.database.setPlaceholderText(_translate("connection", "Base de Dados"))
         self.username.setPlaceholderText(_translate("connection", "Usuário"))
         self.password.setPlaceholderText(_translate("connection", "Senha"))

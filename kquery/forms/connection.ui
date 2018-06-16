@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>193</width>
-    <height>236</height>
+    <height>312</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,6 +18,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QComboBox" name="connectiontype"/>
+   </item>
+   <item>
     <widget class="QLineEdit" name="name">
      <property name="placeholderText">
       <string>Nome da Conexão</string>
@@ -27,7 +30,7 @@
    <item>
     <widget class="QLineEdit" name="host">
      <property name="placeholderText">
-      <string>Host</string>
+      <string>Host/Arquivo(SQLite)</string>
      </property>
     </widget>
    </item>

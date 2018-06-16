@@ -8,6 +8,7 @@ from PyQt5.QtCore import (
     QSettings,
     QThread,
     pyqtSignal)
+from PyQt5 import QtSql
 from .forms import (
     mainwindow,
     connections,
@@ -26,6 +27,20 @@ _LIST_TABLES = ("select relname as Tabelas "
 
 _CONNECTIONS = 'connections'
 _LOFILE = 'lastopen'
+
+_QSQLITE = 'QSQLITE'
+_QMYSQL = 'QMYSQL'
+_QMYSQL3 = 'QMYSQL3'
+_QPSQL = 'QPSQL'
+_QPSQL7 = 'QPSQL7'
+
+_DRIVERS = {
+    _QSQLITE: "SQLite",
+    _QMYSQL: "MySQL",
+    _QMYSQL3: "MySQL 3",
+    _QPSQL: "PostgreSQL",
+    _QPSQL7: "PostgeSQL 7"
+}
 
 
 def splitquerybyposition(query, position):
@@ -67,6 +82,20 @@ class Connection(QtWidgets.QDialog, BaseWindow):
         self.ui = connection.Ui_connection()
         self.ui.setupUi(self)
         self.ui.buttonBox.accepted.connect(self.accepted)
+        self.fill_database_connectors()
+        self.ui.connectiontype.currentTextChanged.connect(
+            self.database_type_chaged)
+    
+    def database_type_chaged(self, value):
+        import ipdb; ipdb.set_trace()
+
+    def fill_database_connectors(self):
+        connectors = QtSql.QSqlDatabase.drivers()
+        for connector in connectors:
+            self.ui.connectiontype.addItem(
+                _DRIVERS[connector],
+                connector
+            )
 
     def validate(self):
         field = None
@@ -97,6 +126,7 @@ class Connection(QtWidgets.QDialog, BaseWindow):
 
         ui = self.ui
         parameters = {
+            'type': ui.connectiontype.currentData(),
             'name': ui.name.text(),
             'host': ui.host.text(),
             'database': ui.database.text(),
@@ -136,6 +166,10 @@ class Connections(QtWidgets.QDialog, BaseWindow):
         if stored_connections:
             for nconnection, connection in enumerate(stored_connections):
                 model.setItem(nconnection, 0, QStandardItem(connection['name']))
+                model.setItem(nconnection, 1, QStandardItem(connection['host']))
+                model.setItem(nconnection, 2, QStandardItem(
+                    _DRIVERS[connection['type']]
+                    ))
         self.ui.connectionslist.setModel(model)
     
     def _selected_connection_name(self, message):

@@ -1,2 +1,3 @@
-sh build.sh
-python3 kquery
+#sh build.sh
+python setup.py install
+kquery
