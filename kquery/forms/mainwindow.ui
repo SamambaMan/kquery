@@ -91,10 +91,16 @@
    <property name="text">
     <string>&amp;Sair</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
   </action>
   <action name="actionConex_es">
    <property name="text">
     <string>&amp;Conexões</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+C</string>
    </property>
   </action>
   <action name="actionAbrir">
@@ -105,6 +111,9 @@
   <action name="actionSalvar">
    <property name="text">
     <string>Sa&amp;lvar</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionSalvar_como">
