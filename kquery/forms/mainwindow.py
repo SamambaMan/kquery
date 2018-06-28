@@ -80,8 +80,11 @@ class Ui_MainWindow(object):
         self.executequery.setShortcut(_translate("MainWindow", "Ctrl+Return"))
         self.menuFile.setTitle(_translate("MainWindow", "Ar&quivo"))
         self.actionQuit.setText(_translate("MainWindow", "&Sair"))
+        self.actionQuit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionConex_es.setText(_translate("MainWindow", "&Conexões"))
+        self.actionConex_es.setShortcut(_translate("MainWindow", "Ctrl+Alt+C"))
         self.actionAbrir.setText(_translate("MainWindow", "&Abrir"))
         self.actionSalvar.setText(_translate("MainWindow", "Sa&lvar"))
+        self.actionSalvar.setShortcut(_translate("MainWindow", "Ctrl+S"))
         self.actionSalvar_como.setText(_translate("MainWindow", "Sal&var como..."))
 
